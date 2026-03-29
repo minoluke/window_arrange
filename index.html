@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>個展配置シミュレーター</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <aside id="sidebar">
+    <div class="sidebar-section">
+      <h2>壁サイズ</h2>
+      <div class="field-row">
+        <label>幅</label>
+        <input type="number" id="wall-w" value="360" min="50" max="2000" step="10">
+        <span class="field-unit">cm</span>
+      </div>
+      <div class="field-row">
+        <label>高さ</label>
+        <input type="number" id="wall-h" value="230" min="50" max="2000" step="10">
+        <span class="field-unit">cm</span>
+      </div>
+    </div>
+
+    <button id="add-btn">＋ 絵を追加</button>
+
+    <div id="painting-settings" class="hidden">
+      <div class="sidebar-section">
+        <div class="painting-header">
+          <h2>絵 <span id="sel-label"></span></h2>
+          <button id="remove-btn">削除</button>
+        </div>
+
+        <div class="field-row">
+          <label>絵の幅</label>
+          <input type="number" id="p-pw" min="5" max="500" step="1">
+          <span class="field-unit">cm</span>
+        </div>
+        <div class="field-row">
+          <label>絵の高さ</label>
+          <input type="number" id="p-ph" min="5" max="500" step="1">
+          <span class="field-unit">cm</span>
+        </div>
+        <div class="field-row">
+          <label>ブロック幅</label>
+          <input type="number" id="p-bw" min="1" max="200" step="0.5">
+          <span class="field-unit">cm</span>
+        </div>
+        <div class="field-row">
+          <label>ブロック高</label>
+          <input type="number" id="p-bh" min="1" max="200" step="0.5">
+          <span class="field-unit">cm</span>
+        </div>
+        <div class="field-row">
+          <label>縁の太さ</label>
+          <input type="number" id="p-mullion" min="0" max="30" step="0.5">
+          <span class="field-unit">cm</span>
+        </div>
+        <div class="field-row">
+          <label>額縁幅</label>
+          <input type="number" id="p-frame" min="0" max="30" step="0.5">
+          <span class="field-unit">cm</span>
+        </div>
+
+        <div class="field-row">
+          <label>始点ずれ X</label>
+          <input type="number" id="p-offx" min="-200" max="200" step="0.5">
+          <span class="field-unit">cm</span>
+        </div>
+        <div class="field-row">
+          <label>始点ずれ Y</label>
+          <input type="number" id="p-offy" min="-200" max="200" step="0.5">
+          <span class="field-unit">cm</span>
+        </div>
+
+        <div class="color-row" style="margin-top:10px;">
+          <label>ガラス色</label>
+          <input type="color" id="p-color-glass">
+        </div>
+        <div class="color-row">
+          <label>縁の色</label>
+          <input type="color" id="p-color-mullion">
+        </div>
+        <div class="color-row">
+          <label>額縁の色</label>
+          <input type="color" id="p-color-frame">
+        </div>
+
+        <div class="size-preview" id="size-preview"></div>
+      </div>
+    </div>
+  </aside>
+
+  <main id="canvas-area">
+    <div id="wall"></div>
+  </main>
+
+</div>
+<script src="app.js"></script>
+</body>
+</html>
