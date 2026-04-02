@@ -10,6 +10,7 @@
 <div id="app">
 
   <aside id="sidebar">
+    <button id="sidebar-toggle" aria-label="設定パネルを開閉">▲ 設定</button>
     <div class="sidebar-section">
       <h2>壁サイズ</h2>
       <div class="field-row">
@@ -96,6 +97,12 @@
   <main id="canvas-area">
     <div id="wall"></div>
   </main>
+
+  <div id="mobile-overlay"></div>
+  <div id="mobile-fab">
+    <button id="mob-add" aria-label="絵を追加">＋</button>
+    <button id="mob-menu" aria-label="設定">☰</button>
+  </div>
 
 </div>
 <script src="app.js"></script>

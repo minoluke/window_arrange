@@ -28,8 +28,9 @@ function paintingTotalCm(p) {
 
 function computeScale() {
   const area = document.getElementById('canvas-area');
-  const availW = area.clientWidth  - 64;
-  const availH = area.clientHeight - 64;
+  const pad = window.innerWidth <= 680 ? 24 : 64;
+  const availW = area.clientWidth  - pad;
+  const availH = area.clientHeight - pad;
   const sw = availW / state.wall.widthCm;
   const sh = availH / state.wall.heightCm;
   state.scale = Math.max(0.05, Math.min(sw, sh, 5));
@@ -183,26 +184,46 @@ function syncSelectedOutlines() {
 }
 
 // ── Drag ───────────────────────────────────────────────
+function startDrag(p, clientX, clientY) {
+  const { widthCm, heightCm } = paintingTotalCm(p);
+  state.selectedId      = p.id;
+  dragState.active      = true;
+  dragState.paintingId  = p.id;
+  dragState.startMouseX = clientX;
+  dragState.startMouseY = clientY;
+  dragState.startPxX    = Math.round(p.xCm * state.scale);
+  dragState.startPxY    = Math.round(p.yCm * state.scale);
+  dragState.paintingPxW = Math.round(widthCm  * state.scale);
+  dragState.paintingPxH = Math.round(heightCm * state.scale);
+  syncSelectedOutlines();
+  renderSidebar();
+}
+
+function moveDrag(clientX, clientY) {
+  const p = state.paintings.find(x => x.id === dragState.paintingId);
+  if (!p) return;
+  const { w: wallW, h: wallH } = getWallPx();
+  const dx = clientX - dragState.startMouseX;
+  const dy = clientY - dragState.startMouseY;
+  const rawX = dragState.startPxX + dx;
+  const rawY = dragState.startPxY + dy;
+  p.xCm = Math.max(0, Math.min(wallW - dragState.paintingPxW, rawX)) / state.scale;
+  p.yCm = Math.max(0, Math.min(wallH - dragState.paintingPxH, rawY)) / state.scale;
+  positionPaintingElement(p);
+}
+
 function attachPaintingListeners(div, p) {
   div.addEventListener('mousedown', (e) => {
     e.preventDefault();
     e.stopPropagation();
-
-    state.selectedId = p.id;
-    const { widthCm, heightCm } = paintingTotalCm(p);
-
-    dragState.active      = true;
-    dragState.paintingId  = p.id;
-    dragState.startMouseX = e.clientX;
-    dragState.startMouseY = e.clientY;
-    dragState.startPxX    = Math.round(p.xCm * state.scale);
-    dragState.startPxY    = Math.round(p.yCm * state.scale);
-    dragState.paintingPxW = Math.round(widthCm  * state.scale);
-    dragState.paintingPxH = Math.round(heightCm * state.scale);
-
-    syncSelectedOutlines();
-    renderSidebar();
+    startDrag(p, e.clientX, e.clientY);
   });
+
+  div.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    startDrag(p, e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: false });
 }
 
 // ── Sidebar ────────────────────────────────────────────
@@ -314,34 +335,59 @@ function init() {
     renderSidebar();
   });
 
-  // Drag: global mousemove / mouseup
+  // Drag: mouse
   document.addEventListener('mousemove', (e) => {
     if (!dragState.active) return;
-    const p = state.paintings.find(x => x.id === dragState.paintingId);
-    if (!p) return;
-
-    const { w: wallW, h: wallH } = getWallPx();
-    const dx = e.clientX - dragState.startMouseX;
-    const dy = e.clientY - dragState.startMouseY;
-    const rawX = dragState.startPxX + dx;
-    const rawY = dragState.startPxY + dy;
-
-    p.xCm = Math.max(0, Math.min(wallW - dragState.paintingPxW, rawX)) / state.scale;
-    p.yCm = Math.max(0, Math.min(wallH - dragState.paintingPxH, rawY)) / state.scale;
-    positionPaintingElement(p);
+    moveDrag(e.clientX, e.clientY);
   });
 
   document.addEventListener('mouseup', () => {
     dragState.active = false;
   });
 
-  // 壁の空白クリックで選択解除
-  document.getElementById('wall').addEventListener('mousedown', (e) => {
-    if (e.target === document.getElementById('wall')) {
+  // Drag: touch
+  document.addEventListener('touchmove', (e) => {
+    if (!dragState.active) return;
+    e.preventDefault();
+    moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: false });
+
+  document.addEventListener('touchend', () => {
+    dragState.active = false;
+  });
+
+  // 壁の空白クリック/タップで選択解除
+  const wall = document.getElementById('wall');
+  const deselectWall = (e) => {
+    if (e.target === wall) {
       state.selectedId = null;
       syncSelectedOutlines();
       renderSidebar();
     }
+  };
+  wall.addEventListener('mousedown', deselectWall);
+  wall.addEventListener('touchstart', deselectWall);
+
+  // モバイル: ボトムシート開閉
+  const toggle = document.getElementById('sidebar-toggle');
+  const sidebar = document.getElementById('sidebar');
+  const mobileOverlay = document.getElementById('mobile-overlay');
+
+  function openSheet()  { sidebar.classList.add('open');    mobileOverlay.classList.add('visible'); }
+  function closeSheet() { sidebar.classList.remove('open'); mobileOverlay.classList.remove('visible'); }
+
+  toggle.addEventListener('click', closeSheet);
+  mobileOverlay.addEventListener('click', closeSheet);
+
+  document.getElementById('mob-menu').addEventListener('click', () => {
+    sidebar.classList.contains('open') ? closeSheet() : openSheet();
+  });
+
+  document.getElementById('mob-add').addEventListener('click', () => {
+    const np = createPainting();
+    state.paintings.push(np);
+    state.selectedId = np.id;
+    renderAll();
   });
 
   // ウィンドウリサイズ

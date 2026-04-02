@@ -196,3 +196,126 @@ body {
 }
 
 .painting.selected .painting-label { display: block; }
+
+/* ── Mobile-only elements: hidden on PC ── */
+#sidebar-toggle, #mobile-overlay, #mobile-fab { display: none; }
+
+@media (max-width: 680px) {
+  /* ── Layout ── */
+  #app { position: relative; }
+
+  #canvas-area {
+    width: 100%;
+    height: 100vh;
+    padding: 12px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── Sidebar → Bottom sheet overlay ── */
+  #sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-height: 70vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    background: #1a1a1a;
+    border-right: none;
+    border-radius: 14px 14px 0 0;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.5);
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 200;
+  }
+
+  #sidebar.open {
+    transform: translateY(0);
+  }
+
+  /* Drag handle */
+  #sidebar-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 40px;
+    background: #1a1a1a;
+    border: none;
+    border-bottom: 1px solid #2a2a2a;
+    border-radius: 14px 14px 0 0;
+    cursor: pointer;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    font-size: 0;
+    color: transparent;
+  }
+
+  #sidebar-toggle::before {
+    content: '';
+    width: 36px;
+    height: 4px;
+    background: #555;
+    border-radius: 2px;
+  }
+
+  /* Hide original add button (replaced by FAB) */
+  #add-btn { display: none; }
+
+  /* ── Backdrop overlay ── */
+  #mobile-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 150;
+  }
+
+  #mobile-overlay.visible { display: block; }
+
+  /* ── Floating Action Buttons ── */
+  #mobile-fab {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: fixed;
+    bottom: 20px;
+    right: 16px;
+    z-index: 100;
+  }
+
+  #mobile-fab button {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #mob-add {
+    background: #2a5a2a;
+    color: #8ecf8e;
+  }
+  #mob-add:active { background: #356b35; }
+
+  #mob-menu {
+    background: #2a3a5a;
+    color: #8eaecf;
+  }
+  #mob-menu:active { background: #354b6b; }
+
+  /* ── Better touch targets ── */
+  .field-row { margin-bottom: 10px; }
+  .field-row input[type="number"] { height: 36px; font-size: 14px; }
+  .color-row { margin-bottom: 10px; }
+  .painting-label { font-size: 12px; }
+}
