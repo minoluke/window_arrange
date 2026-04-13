@@ -46,8 +46,10 @@ function getWallPx() {
 // ── Painting factory ───────────────────────────────────
 function createPainting() {
   const offset = (state.paintings.length % 6) * 10;
+  const id = state.nextId++;
   return {
-    id:               state.nextId++,
+    id,
+    name:             `絵 ${id}`,
     xCm:              10 + offset,
     yCm:              10 + offset,
     paintingWidthCm:  50,
@@ -151,7 +153,7 @@ function ensurePaintingElement(p) {
 
   const label = document.createElement('div');
   label.className = 'painting-label';
-  label.textContent = `絵 ${p.id}`;
+  label.textContent = p.name;
   div.appendChild(label);
 
   const canvas = document.createElement('canvas');
@@ -243,6 +245,7 @@ function renderSidebar() {
   isUpdatingSidebar = true;
 
   document.getElementById('sel-label').textContent    = p.id;
+  document.getElementById('p-name').value             = p.name;
   document.getElementById('p-pw').value               = p.paintingWidthCm;
   document.getElementById('p-ph').value               = p.paintingHeightCm;
   document.getElementById('p-bw').value               = p.blockWidthCm;
@@ -302,6 +305,19 @@ function init() {
     if (isNaN(v) || v < 50) return;
     state.wall.heightCm = v;
     renderAll();
+  });
+
+  // Painting name
+  document.getElementById('p-name').addEventListener('input', (e) => {
+    if (isUpdatingSidebar) return;
+    const p = state.paintings.find(x => x.id === state.selectedId);
+    if (!p) return;
+    p.name = e.target.value;
+    const div = document.querySelector(`.painting[data-id="${p.id}"]`);
+    if (div) {
+      const lbl = div.querySelector('.painting-label');
+      if (lbl) lbl.textContent = p.name;
+    }
   });
 
   // Painting numeric fields
