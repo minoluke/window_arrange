@@ -292,13 +292,34 @@ function bindColor(id, field) {
 }
 
 // ── Export / Import ────────────────────────────────────
-function exportJSON() {
+async function exportJSON() {
   const data = {
     wall: { ...state.wall },
     paintings: state.paintings.map(p => ({ ...p })),
     nextId: state.nextId,
   };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const json = JSON.stringify(data, null, 2);
+
+  if (window.showSaveFilePicker) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: '個展配置.json',
+        types: [{
+          description: 'JSON Files',
+          accept: { 'application/json': ['.json'] },
+        }],
+      });
+      const writable = await handle.createWritable();
+      await writable.write(json);
+      await writable.close();
+    } catch (err) {
+      if (err.name !== 'AbortError') alert('保存に失敗しました: ' + err.message);
+    }
+    return;
+  }
+
+  // Fallback: Safari/Firefox など非対応ブラウザは自動ダウンロード
+  const blob = new Blob([json], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
