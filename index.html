@@ -25,6 +25,13 @@
       </div>
     </div>
 
+    <div class="sidebar-section">
+      <div class="io-row">
+        <button id="export-btn">↓ 保存</button>
+        <label id="import-label">↑ 読み込み<input type="file" id="import-input" accept=".json"></label>
+      </div>
+    </div>
+
     <button id="add-btn">＋ 絵を追加</button>
 
     <div id="painting-settings" class="hidden">
@@ -102,6 +109,7 @@
     <div id="wall"></div>
   </main>
 
+  <div id="drop-overlay">JSONファイルをドロップして読み込み</div>
   <div id="mobile-overlay"></div>
   <div id="mobile-fab">
     <button id="mob-add" aria-label="絵を追加">＋</button>

@@ -85,6 +85,45 @@ body {
   width: 20px;
 }
 
+.io-row {
+  display: flex;
+  gap: 8px;
+}
+
+#export-btn, #import-label {
+  flex: 1;
+  padding: 7px 0;
+  background: #2a2a3a;
+  border: 1px solid #3a3a5a;
+  border-radius: 5px;
+  color: #8eaecf;
+  font-size: 12px;
+  cursor: pointer;
+  text-align: center;
+  display: block;
+}
+
+#export-btn:hover, #import-label:hover { background: #2f2f4a; }
+
+#import-input { display: none; }
+
+#drop-overlay {
+  display: none;
+  position: fixed;
+  inset: 12px;
+  background: rgba(106, 171, 255, 0.1);
+  border: 3px dashed #6aabff;
+  border-radius: 8px;
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #6aabff;
+  pointer-events: none;
+}
+
+#drop-overlay.visible { display: flex; }
+
 #add-btn {
   display: block;
   width: calc(100% - 32px);

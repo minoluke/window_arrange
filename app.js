@@ -291,6 +291,46 @@ function bindColor(id, field) {
   });
 }
 
+// ── Export / Import ────────────────────────────────────
+function exportJSON() {
+  const data = {
+    wall: { ...state.wall },
+    paintings: state.paintings.map(p => ({ ...p })),
+    nextId: state.nextId,
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = '個展配置.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importJSON(data) {
+  document.querySelectorAll('.painting').forEach(el => el.remove());
+  state.wall     = data.wall;
+  state.paintings = data.paintings;
+  state.nextId   = data.nextId;
+  state.selectedId = null;
+  document.getElementById('wall-w').value = state.wall.widthCm;
+  document.getElementById('wall-h').value = state.wall.heightCm;
+  renderAll();
+}
+
+function loadJSONFile(file) {
+  if (!file || !file.name.endsWith('.json')) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      importJSON(JSON.parse(ev.target.result));
+    } catch {
+      alert('JSONファイルの読み込みに失敗しました');
+    }
+  };
+  reader.readAsText(file);
+}
+
 // ── Init ───────────────────────────────────────────────
 function init() {
   // Wall inputs
@@ -404,6 +444,41 @@ function init() {
     state.paintings.push(np);
     state.selectedId = np.id;
     renderAll();
+  });
+
+  // Export / Import
+  document.getElementById('export-btn').addEventListener('click', exportJSON);
+
+  document.getElementById('import-input').addEventListener('change', (e) => {
+    loadJSONFile(e.target.files[0]);
+    e.target.value = '';
+  });
+
+  // ファイルのドラッグ&ドロップ
+  let dragFileCounter = 0;
+  const dropOverlay = document.getElementById('drop-overlay');
+
+  document.addEventListener('dragenter', (e) => {
+    if (e.dataTransfer.types.includes('Files')) {
+      dragFileCounter++;
+      dropOverlay.classList.add('visible');
+    }
+  });
+
+  document.addEventListener('dragleave', () => {
+    dragFileCounter = Math.max(0, dragFileCounter - 1);
+    if (dragFileCounter === 0) dropOverlay.classList.remove('visible');
+  });
+
+  document.addEventListener('dragover', (e) => {
+    if (e.dataTransfer.types.includes('Files')) e.preventDefault();
+  });
+
+  document.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dragFileCounter = 0;
+    dropOverlay.classList.remove('visible');
+    if (e.dataTransfer.files.length > 0) loadJSONFile(e.dataTransfer.files[0]);
   });
 
   // ウィンドウリサイズ
