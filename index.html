@@ -12,17 +12,11 @@
   <aside id="sidebar">
     <button id="sidebar-toggle" aria-label="設定パネルを開閉">▲ 設定</button>
     <div class="sidebar-section">
-      <h2>壁サイズ</h2>
-      <div class="field-row">
-        <label>幅</label>
-        <input type="number" id="wall-w" value="360" min="50" max="2000" step="10">
-        <span class="field-unit">cm</span>
+      <div class="wall-section-header">
+        <h2>壁</h2>
+        <button id="add-wall-btn">＋ 壁</button>
       </div>
-      <div class="field-row">
-        <label>高さ</label>
-        <input type="number" id="wall-h" value="230" min="50" max="2000" step="10">
-        <span class="field-unit">cm</span>
-      </div>
+      <div id="walls-list"></div>
     </div>
 
     <div class="sidebar-section">
@@ -38,7 +32,11 @@
       <div class="sidebar-section">
         <div class="painting-header">
           <h2>絵 <span id="sel-label"></span></h2>
-          <button id="remove-btn">削除</button>
+          <div class="painting-header-actions">
+            <button id="rotate-btn" title="90°回転">↻</button>
+            <button id="duplicate-btn" title="複製">⎘</button>
+            <button id="remove-btn">削除</button>
+          </div>
         </div>
 
         <div class="field-row">
@@ -106,7 +104,13 @@
   </aside>
 
   <main id="canvas-area">
-    <div id="wall"></div>
+    <div id="wall-container"></div>
+    <div id="zoom-controls">
+      <button id="zoom-out" title="縮小">−</button>
+      <button id="zoom-reset" title="フィット">⊡</button>
+      <span id="zoom-level">100%</span>
+      <button id="zoom-in" title="拡大">＋</button>
+    </div>
   </main>
 
   <div id="drop-overlay">JSONファイルをドロップして読み込み</div>
